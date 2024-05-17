@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PD Calculator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: white;
+        color: #D47380;
+    }
+    .page {
+        text-align: center;
+        padding: 20px;
+    }
+    .box {
+        display: inline-block;
+        width: 400px;
+        height: 300px;
+        margin: 20px;
+        background-color: #D47380;
+        color: white;
+        text-align: center;
+        padding: 20px;
+    }
+    .button {
+        background-color: #808080;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+    }
+
+    /* Additional style for the box on agreement page */
+    #agreementBox {
+        width: 400px;
+        height: 500px;
+    }
+
+    /* Additional style for the identification box */
+    #identificationBox {
+        width: 400px;
+        height: 300px;
+    }
+
+    /* Additional style for the calculator page */
+    #calculatorPage .box {
+        width: 300px;
+        height: 100px;
+    }
+
+    /* Style for the selected button */
+    .selected {
+        background-color: #8B0000; /* Dark red */
+    }
+
+    /* Style for the question text */
+    .question-text {
+        margin-bottom: 10px; /* Add margin between question and choice buttons */
+    }
+
+    /* Style for selected choice */
+    .selected-choice {
+        background-color: #8B0000; /* Dark red */
+        color: white;
+    }
+</style>
+</head>
+<body>
+<div class="page">
+    <h1>prodromal PD Calculator</h1>
+    <div class="box">
+        <h2>전구기 파킨슨병 위험도 검사</h2>
+        <p>이 검사는 검사자가 파킨슨병에 진단될 가능성이 얼마나 되는지 알아보는 검사입니다. 2019년 국제 파킨슨 및 이상운동질환 학회에서 만든 Prodromal Parkinson’s Disease Calculator를 기반으로 만들었습니다. </p>
+       <p> 초기 파킨슨병은 떨리는 증상이 있기 전 비특이한 증상들로 나타날 수 있으므로, 아래 검사의 가능성 점수가 높다면 정밀검사를 권장합니다.</p>
+        <button class="button" onclick="showAgreement()">검사 시작</button>
+    </div>
+</div>
+
+<div id="agreementPage" style="display: none;">
+    <div class="page">
+        <h1>시작하기 전에</h1>
+        <div class="box" id="agreementBox">
+            <h2>개인정보 수집 동의</h2>
+            <p>한림대학교성심병원은(는)  개인정보보호법 제15조 및 같은 법 제22조에 근거하여, 다음과 같이 환자의 정확한 검사 및 연구을(를) 위하여 개인정보를 수집․이용하는데 동의를 받고자 합니다.</p>
+<p>
+1. 개인정보를 제공받는 자 : 한림대학교성심병원<br>
+2. 개인정보를 제공받는 자의 개인정보 이용 목적 : 환자의 정확한 진단 및 연구 <br>
+3. 제공하는 개인정보의 항목 : 성함, 성별, 나이<br>
+4. 개인정보를 제공받는 자의 개인정보 보유 및 이용기간 : 수집일로부터 3년 <br>
+5. 동의거부권 및 동의 거부에 따른 불이익 안내:<br>
+검사 참여자은(는) 위와 같이 개인정보를 수집․이용하는 데 대한 동의를 거부할 권리가 있습니다. 그러나 동의를 거부할 경우  한림대학교성심병원에서 제공하는 전구기 파킨슨병 진단 및 관리 서비스을(를) 받을 수 없음을 참고하시기 바랍니다. </p>
+            <button class="button" onclick="showIdentification()">동의합니다</button>
+            <button class="button" onclick="notParticipate()">동의하지 않습니다</button>
+        </div>
+    </div>
+</div>
+
+<div id="identificationPage" style="display: none;">
+    <div class="page">
+        <h1>개인정보 입력</h1>
+        <div class="box" id="identificationBox">
+            <h2>인적사항</h2>
+            <label for="name">성함:</label>
+            <input type="text" id="name" required><br><br>
+            <label for="age">나이:</label>
+            <input type="number" id="age" required><br><br>
+            <label for="gender">성별:</label>
+            <select id="gender" required>
+                <option value="male">남성</option>
+                <option value="female">여성</option>
+                <option value="other">그 외</option>
+            </select><br><br>
+            <label for="phone">전화번호(-없이 적어주세요):</label>
+            <input type="tel" id="phone" required><br><br>
+        </div>
+        <button class="button" onclick="showCalculator()">Next</button>
+    </div>
+</div>
+
+<div id="calculatorPage" style="display: none;">
+    <div class="page">
+        <h1>전구기 파킨슨병 위험도 검사</h1>
+        <div id="questionsContainer">
+            <!-- Questions will be dynamically generated using JavaScript -->
+        </div>
+        <div id="pagination">
+            <button class="button" id="prevButton" onclick="prevPage()">이전</button>
+            <button class="button" id="nextButton" onclick="nextPage()">다음</button>
+        </div>
+        <button class="button" id="calculateButton" style="display: none;" onclick="calculate()">계산하기</button>
+    </div>
+</div>
+
+<div id="resultsPage" style="display: none;">
+    <div class="page">
+        <h1>결과</h1>
+        <div class="box">
+            <h2>가능성점수(likelihood ratio)</h2>
+            <p id="totalLRText"></p>
+            <h2>검사 결과</h2>
+            <p id="message"></p>
+            <button class="button" onclick="saveToExcel()">엑셀에 저장하기</button>
+            <button class="button" onclick="sendSMS(phoneNumber, message)">결과 전송하기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Sample questions array with weights
+var questions = [
+	{ question: "1. 치매를 진단받으신 적 있으신가요?", weights: { 네: 100, 아니오: 1, 모름: 1 } },
+    { question: "2.	농약을 사용하는 직업인가요?", weights: { 네: 1.5, 아니오: 1, 모름: 1 } },
+    { question: "3. 유기용매를 사용하는 직업인가요?(세탁소, 자동차 도장 등)", weights: { 네: 1.5, 아니오: 1, 모름: 1 } },
+    { question: "4. 커피를 자주 마시나요?(하루에 커피 세잔 이상 또는 홍차 6잔 이상)", weights: { 네: 1.35, 아니오: 0.88, 모름: 1 } },
+    { question: "5. 담배 피우시나요?", weights: { 네: 0.51, 아니오: 1.2, 끊음: 0.91 } },
+    { question: "6. 부모님이나 자식, 형제 자매 중에 파킨슨병에 걸린 분이 계신가요?", weights: { 네: 2.5, 아니오: 1, 모름: 1 } },
+    { question: "7. 파킨슨병 유전자 검사에서 위험유전자가 있다 들으셨나요?(검사하신 적이 없다면 없다고 표시해주세요)", weights: { 네: 1.57, 아니오: 0.45, 모름: 1 } },
+	{ question: "8. 당뇨를 진단받은 적 있으신가요?", weights: { 네: 1.5, 아니오: 0.97, 모름: 1 } },
+	{ question: "9. 신체활동이 적나요?(일주일에 땀이 날 정도로 운동을 1회 이하)", weights: { 네: 1.3, 아니오: 0.91, 모름: 1 } },
+	{ question: "10. 잠결에 말을 하거나 손발을 움직인다고 들은 적이 3회 이상 있나요?", weights: { 네: 2.8, 아니오: 0.89, 모름: 1 } },
+	{ question: "11. ", weights: { yes: 2.8, no: 1, notKnown: 1 } },
+    { question: "12. 예전보다 냄새를 못맡으시나요?", weights: { 네: 6.4, 아니오: 0.4, 모름: 1 } },
+    { question: "13. 변비가 있으신가요?(1주일에 한번 이상 약을 드시나요?) ", weights: { 네: 2.5, 아니오: 0.82, 모름: 1 } },
+    { question: "14.배뇨 보실 때 불편함이 있으십니까?", weights: { 네: 2, 아니오: 0.9, 모름: 1 } },
+    { question: "15.심하게 발기가 안되는 경우가 있나요?(여성의 경우 모른다고 표시해주세요)", weights: { 네: 3.4, 아니오: 0.87, 모름: 1 } },
+    { question: "16. 앉았다 일어났을 때 현기증을 자주 느끼십니까?", weights: { 네: 3.2, 아니오: 0.8, 모름: 1 } },
+    { question: "17. 우울증을 진단받으셨나요? ", weights: { 네: 1.6, 아니오: 0.88, 모름: 1 } },
+    { question: "18. 기억력이 떨어져 진료받고 계신가요?", weights: { 네: 1.88, 아니오: 0.88, 모름: 1 } },
+    { question: "19. 몸이 뻣뻣하거나 예전보다 몸이 굼떠지시진 않나요?", weights: { yes: 2, no: 1, notKnown: 0.5 } },
+    { question: "20. 걷거나 가만히 있을 때 손이나 발이 떨리나요?", weights: { yes: 2, no: 1, notKnown: 0.5 } },
+    { question: "21. 파킨슨병 확진검사(PET 검사)를 시행해보신 적 있으신가요?", weights: { 네: 43.3, 아니오: 0.66, 모름: 1 } },
+    // Add more questions as needed
+];
+
+var currentPage = 0;
+var questionsPerPage = 5;
+var totalLR = 1;
+
+function showAgreement() {
+    document.querySelector('.page').style.display = 'none'; // Hide the initial welcome page
+    document.getElementById('agreementPage').style.display = 'block'; // Show the agreement page
+}
+
+function showIdentification() {
+    document.getElementById('agreementPage').style.display = 'none';
+    document.getElementById('identificationPage').style.display = 'block';
+}
+
+function showCalculator() {
+    document.getElementById('identificationPage').style.display = 'none';
+    document.getElementById('calculatorPage').style.display = 'block';
+    renderQuestions();
+}
+
+function renderQuestions() {
+    var questionsContainer = document.getElementById('questionsContainer');
+    questionsContainer.innerHTML = '';
+    var start = currentPage * questionsPerPage;
+    var end = Math.min(start + questionsPerPage, questions.length);
+    for (var i = start; i < end; i++) {
+        var questionBox = document.createElement('div');
+        questionBox.className = 'box';
+        var questionText = document.createElement('div');
+        questionText.textContent = questions[i].question;
+        questionText.className = 'question-text';
+        questionBox.appendChild(questionText);
+
+        var choices = Object.keys(questions[i].weights);
+        for (var j = 0; j < choices.length; j++) {
+            var choiceButton = document.createElement('button');
+            choiceButton.textContent = choices[j];
+            choiceButton.className = 'button';
+            choiceButton.setAttribute('onclick', 'selectChoice(' + i + ', "' + choices[j] + '")');
+            choiceButton.setAttribute('data-question-index', i);
+            questionBox.appendChild(choiceButton);
+        }
+
+        questionsContainer.appendChild(questionBox);
+    }
+    updatePaginationButtons();
+}
+
+function selectChoice(questionIndex, choice) {
+    // Reset color for all choice buttons in the question
+    var buttons = document.querySelectorAll('[data-question-index="' + questionIndex + '"]');
+    buttons.forEach(function(button) {
+        button.classList.remove('selected-choice');
+    });
+
+    // Apply selected color to the clicked choice button
+    var selectedButton = event.target;
+    selectedButton.classList.add('selected-choice');
+
+    // Multiply the weight of the selected choice with the total LR
+    var weight = questions[questionIndex].weights[choice];
+    totalLR *= weight;
+    
+    
+    // Check if it's the last page
+    if (currentPage === Math.ceil(questions.length / questionsPerPage) - 1) {
+        document.getElementById('calculateButton').style.display = 'block';
+    }
+}
+
+var message;
+
+function calculate() {
+    // Calculate total LR
+    var age = parseInt(document.getElementById('age').value);
+    var gender = document.getElementById('gender').value; // Get selected gender
+    var priorProbability;
+    if (age <= 54) {
+        priorProbability = 1000;
+    } else if (age >= 55 && age <= 59) {
+        priorProbability = 515;
+    } else if (age >= 60 && age <= 64) {
+        priorProbability = 300;
+    } else if (age >= 65 && age <= 69) {
+        priorProbability = 180;
+    } else if (age >= 70 && age <= 74) {
+        priorProbability = 155;
+    } else {
+        priorProbability = 95;
+    }
+
+    // Calculate weight based on gender
+    var genderWeight = (gender === "male") ? 2 : 1;
+
+
+    // Multiply total LR with gender weight
+    totalLR = totalLR * genderWeight;
+
+    if (totalLR - priorProbability >= 0) {
+        message = "정밀검사가 필요합니다";
+    } else {
+        message = "가능성이 낮습니다";
+    }
+
+    document.getElementById('totalLRText').textContent = "Total LR: " + totalLR.toFixed(2);
+    document.getElementById('message').textContent = message;
+    document.getElementById('calculatorPage').style.display = 'none';
+    document.getElementById('resultsPage').style.display = 'block';
+}
+
+console.log(message);
+
+function prevPage() {
+    if (currentPage > 0) {
+        currentPage--;
+        renderQuestions();
+    }
+}
+
+function nextPage() {
+    if (currentPage < Math.ceil(questions.length / questionsPerPage) - 1) {
+        currentPage++;
+        renderQuestions();
+    }
+}
+
+function updatePaginationButtons() {
+    var prevButton = document.getElementById('prevButton');
+    var nextButton = document.getElementById('nextButton');
+    prevButton.disabled = currentPage === 0;
+    nextButton.disabled = currentPage === Math.ceil(questions.length / questionsPerPage) - 1;
+}
+
+function saveToExcel() {
+	//Get information from identification page
+    var name = document.getElementById('name').value;
+    var gender = document.gentElementById('gender').value;
+    var age = document.getElementById('age').value;
+    var phonenumber = docutment.getElementById('phone').value;
+    // Prepare data to be saved to CSV
+    var csvContent = "data:text/csv;charset=utf-8,\uFEFF";
+    csvContent += "Name,Gender,Age,Phone Number,Question,Choice,Weight\n";
+    
+    // Add identification information to CSV content
+    csvContent += '"' + name + '","' + gender + '","' + age + '","' + phoneNumber + '"\n';
+    
+    // Iterate through questions and add selected choices and their weights
+    for (var i = 0; i < questions.length; i++) {
+        var selectedButton = document.querySelector('[data-question-index="' + i + '"].selected-choice');
+        if (selectedButton) {
+            var choice = selectedButton.textContent;
+            var weight = questions[i].weights[choice];
+            csvContent += ',"",' + '"' + questions[i].question + '","' + choice + '","' + weight + '"\n';
+        }
+    }
+
+    // Encode CSV data
+    var encodedUri = encodeURI(csvContent);
+    // Create link element to trigger download
+    var link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "prodromal_pd_calculator_results.csv");
+    // Append link to body
+    document.body.appendChild(link);
+    // Trigger click event on link to start download
+    link.click();
+}
+
+const phoneNumber = "+82-10-7529-1525"; // 담당 주치의 번호
+
+function sendSMS(phoneNumber, message) {
+    // Get the name from the HTML element with id 'name'
+    const name = document.getElementById('name').value;
+
+    // Construct the SMS message in the desired format
+    const smsMessage = `${name} 님은 전구기 파킨슨병 검사 결과 "${message}"`;
+
+    // Open the messaging app with the constructed message
+    window.open(`sms:${phoneNumber}?body=${encodeURIComponent(smsMessage)}`);
+}
+
+
+// Initial render
+renderQuestions();
+</script>
+</body>
+</html>
